@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>简单实用手机微信移动端幸运大转盘抽奖jQuery特效插件</title>
+		<meta name="keywords" content="简单实用,手机微信,移动端,幸运大转盘,抽奖,jQuery特效,插件" />
+		<meta name="description" content="简单实用手机微信移动端幸运大转盘抽奖jQuery特效插件下载。只需修改奖品ID，即可自定义抽奖奖品，非常简单实用的一款可自定义抽奖奖品的大转盘js插件。" /> 
+		<meta name="author" content="js代码(www.jsdaima.com)" />
+		<meta name="copyright" content="js代码(www.jsdaima.com)" />
+		<link rel="stylesheet" href="css/swiper.min.css" />
+		<link rel="stylesheet" href="css/index.css" />
+		<script>
+			document.documentElement.style.fontSize=document.documentElement.clientWidth/3.75+'px'
+		</script>
+	</head>
+	<body>
+		<div class="box">
+			<p class="tit">大转盘抽奖-指定奖品</p>
+			<p class="tit">只需要更换turnplate的id就可以更换相应的奖品</p>
+			<img class="turntable_zj" src="img/turntable_zj.png" />			
+			<img class="pointer" src="img/point.png" />
+			<!--转盘文字及图片-->
+			<div class="turntable_box">				
+				<img class="turntable_bg" src="img/inner.png">
+				<div class="item">
+					<div id='1'>iphone x</div>
+					<img src="img/iphonex.png" />
+				</div>
+				<div class="item" style="transform: rotate(45deg);">
+					<div id='2'>100话费红包</div>
+					<img src="img/iphonex.png" />
+				</div>
+				<div class="item" style="transform: rotate(90deg);">
+					<div id='3'>周大福吊坠</div>
+					<img src="img/iphonex.png" />
+				</div>
+				<div class="item" style="transform: rotate(135deg);">
+					<div id='4'>50个赠币</div>
+					<img src="img/iphonex.png" />
+				</div>
+				<div class="item" style="transform: rotate(180deg);">
+					<div id='5'>爱奇艺月卡</div>
+					<img src="img/iphonex.png" />
+				</div>
+				<div class="item" style="transform: rotate(-135deg);">
+					<div id='6'>1个赠币</div>
+					<img src="img/iphonex.png" />
+				</div>
+				<div class="item" style="transform: rotate(-90deg);">
+					<div id='7'>欧乐B牙刷</div>
+					<img src="img/iphonex.png" />
+				</div>
+				<div class="item" style="transform: rotate(-45deg);">
+					<div id='8'>1个积分</div>
+					<img src="img/iphonex.png" />
+				</div>
+			</div>
+			<!--中奖名单轮播-->
+			<div class="swiper-container list">
+			    <div class="swiper-wrapper">
+				    <div class="swiper-slide">恭喜156****2323抽中iphonex！</div>
+				    <div class="swiper-slide">恭喜156****2323抽中iphonex！</div>
+				    <div class="swiper-slide">恭喜156****2323抽中iphonex！</div>
+				    <div class="swiper-slide">恭喜156****2323抽中iphonex！</div>
+				    <div class="swiper-slide">恭喜156****2323抽中iphonex！</div>
+			    </div>
+			</div>
+			<div class="transDiv"></div>			
+		</div>
+	</body>
+</html>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.rotate.min.js" ></script>
+<script type="text/javascript" src="js/swiper-3.4.2.jquery.min.js" ></script>
+<script>
+	//只需要更换turnplate的id就可以更换相应的奖品
+	var turnplate={
+      	restaraunts:["iphone x", "100话费红包", "周大福吊坠", "50个赠币", "爱奇艺月卡", "1个赠币", "欧乐B牙刷", "1个积分"],       //大转盘奖品名称
+      	rotateFlag:false,      //false:停止;ture:旋转
+      	id:1     //抽中的id 1:iphone x  2:100话费红包   3:周大福吊坠 ......
+  	};
+  	$(document).ready(function(){
+	    //旋转转盘 item:奖品位置; txt：提示语;
+	    var rotateFn = function (item, txt){
+	      	var angles = item * (360 / turnplate.restaraunts.length) - (360 / (turnplate.restaraunts.length*2));
+	      	if(angles<270){
+	       	 angles = 270 - angles; 
+	      	}else{
+	      	  angles = 360 - angles + 270;
+	      	}
+	      	$('.turntable_box').stopRotate();
+	     	$('.turntable_box').rotate({
+	       		angle:0,
+	        	animateTo:angles+1800+22.5,
+	        	duration:8000,
+	       		callback:function (){
+	         		alert(txt);
+	          		turnplate.rotateFlag = !turnplate.rotateFlag;
+	        	}
+	      	});
+	    };
+	
+	    $('.pointer').click(function (){
+	      	if(turnplate.rotateFlag)return;
+	      	turnplate.rotateFlag = !turnplate.rotateFlag;
+	      	var item = turnplate.id;
+	      	//指针落在对应奖品区域的中心角度
+	      	rotateFn(item-2, turnplate.restaraunts[item-1]);
+	      	//console.log(item);
+	    });	
+	    
+	    var swiper = new Swiper('.list', {
+	      	direction: 'vertical',
+	      	autoplay: true,
+	      	speed:1300,
+	      	loop:true
+	    });
+	  
+	});  
+</script>
