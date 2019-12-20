@@ -1,0 +1,119 @@
+* {
+	margin:0;
+	padding:0;
+}
+body {
+    overflow: hidden;
+}
+#wrap {
+    padding: 20px;
+	position:fixed;
+	left:0;
+	top:300px;
+	width:1920px;
+	height:1080px;
+	border:1px solid #000;
+	position:fixed;
+	left:0;
+	top:0;
+	color:gold;
+	font-size:14px;
+	position:relative;
+	background:#000;
+	line-height:20px;
+}
+#wrap .wrap_inner {
+	width:800px;
+	height:800px;
+	background:#000;
+	position:relative;
+	border-radius:50%;
+}
+#wrap .wrap_inner .timeout {
+	width:800px;
+	height:800px;
+	position:absolute;
+	background:transparent;
+}
+#wrap .wrap_inner .timeout:nth-of-type(1) {
+	transition:1s linear;
+	box-shadow:0 0 20px gold;
+	border-radius:50%;
+}
+#wrap .wrap_inner .timeout:nth-of-type(2) {
+	width:600px;
+	height:600px;
+	left:100px;
+	top:100px;
+	transition:1s linear;
+}
+#wrap .wrap_inner .timeout:nth-of-type(3) {
+	width:400px;
+	height:400px;
+	left:200px;
+	top:200px;
+	transition:1s linear;
+}
+#wrap .wrap_inner .timeout:nth-of-type(4) {
+	width:300px;
+	height:300px;
+	left:250px;
+	top:250px;
+	transition:1s linear;
+}
+#wrap .wrap_inner .timeout:nth-of-type(5) {
+	width:200px;
+	height:200px;
+	left:300px;
+	top:300px;
+	transition:1s linear;
+}
+#wrap .wrap_inner .timeout .secbox {
+	width:400px;
+	height:20px;
+	position:absolute;
+	left:400px;
+	top:390px;
+	transform-origin:left center;
+}
+#wrap .wrap_inner .timeout .minbox {
+	width:300px;
+	height:20px;
+	position:absolute;
+	left:300px;
+	top:290px;
+	transform-origin:left center;
+}
+#wrap .wrap_inner .timeout .houbox {
+	width:200px;
+	height:20px;
+	position:absolute;
+	left:200px;
+	top:190px;
+	transform-origin:left center;
+}
+#wrap .wrap_inner .timeout .datbox {
+	width:150px;
+	height:20px;
+	position:absolute;
+	left:150px;
+	top:140px;
+	transform-origin:left center;
+}
+#wrap .wrap_inner .timeout .daybox {
+	width:100px;
+	height:20px;
+	position:absolute;
+	left:100px;
+	top:90px;
+	transform-origin:left center;
+}
+#wrap .zhizhen {
+	width:400px;
+	height:20px;
+	background:rgba(255,255,255,.4);
+	position:absolute;
+	left:420px;
+	top:410px;
+	z-index:999;
+}
