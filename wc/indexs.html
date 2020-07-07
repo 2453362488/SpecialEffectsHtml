@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>卧蚕挑一挑</title>
+  <meta name="keywords" content="卧蚕挑一挑" />
+  <meta name="description" content="卧蚕挑一挑在线小游戏操作说明: 1、电脑 按下空格蓄力，松开起跳；2、手机 按下开始蓄力，左右滑动的越远手指松开时跳的越远得分。" />
+  <meta name="author" content="js代码(www.jsdaima.com)" />
+  <meta name="copyright" content="js代码(www.jsdaima.com)" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    html,body {
+      width: 100%;
+      height: 100%;
+    }
+     canvas {
+       display: block;
+     }
+     #help {
+       top: 0;
+       left: 0;
+       z-index: 3;
+       width: 100%;
+       height: 100%;
+       padding: 10%;
+       font-size: 30px;
+       font-weight: 600;
+       display: none;
+       cursor: pointer;
+       position: absolute;
+       text-align: center;
+       box-sizing: border-box;
+     }
+  </style>
+</head>
+<body>
+  <canvas id="canvas-game"></canvas>
+  <div id="help">
+    <!-- 存放说明文字的div -->
+  </div>
+
+  <div style="display: none">
+    <img id="tpImg1" src="images/001.png">
+    <img id="tpImg2" src="images/002.png">
+  </div>
+
+  <script src="main.js"></script>
+  <script src="components/background.js"></script>
+  <script src="roles/leadTest.js"></script>
+  <script src="jumper/jumperBlock.js"></script>
+  <script src="jumper/jumper.js"></script>
+</body>
+</html>

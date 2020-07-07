@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可展开收缩带二维码侧边栏在线客服jQuery特效</title>
+<meta name="keywords" content="可展开,收缩,二维码,侧边栏,在线客服,jQuery特效" />
+<meta name="description" content="可展开收缩带二维码侧边栏在线客服jQuery特效代码下载。" /> 
+<meta name="author" content="js代码(www.jsdaima.com)" />
+<meta name="copyright" content="js代码(www.jsdaima.com)" />
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript">
+$(function(){
+	var KF = $(".keifu");
+	var wkbox = $(".keifu_box");
+	var kf_close = $(".keifu .keifu_close");
+	var icon_keifu = $(".icon_keifu");
+	var kH = wkbox.height();
+	var kW = wkbox.width();
+	var wH = $(window).height();
+	KF.css({height:kH});
+	icon_keifu.css("top",parseInt((kH-100)/2));
+	var KF_top = (wH-kH)/2;
+	if(KF_top<0) KF_top=0;
+	KF.css("top",KF_top);
+	
+	$(kf_close).click(function(){
+		KF.animate({width:"0"},200,function(){
+			wkbox.hide();
+			icon_keifu.show();
+			KF.animate({width:26},300);		
+		});	
+	});
+	
+	$(icon_keifu).click(function(){
+		$(this).hide();
+		wkbox.show();
+		KF.animate({width:kW},200);
+	});
+	
+});
+</script>
+
+</head>
+<body>
+
+<div style="height:1000px;"></div>
+
+<div class="keifu">
+
+	<div class="icon_keifu"></div>
+	
+	<div class="keifu_box">
+		<div class="keifu_head"><a href="javascript:void(0)" class="keifu_close"></a></div>
+		<ul class="keifu_con">
+			<li><a target="_blank" href="tencent://message/?uin=123456789&amp;site=www.jsdaima.com&amp;Menu=yes"><img src="images/qq.png"/></a></li>
+			<li><a target="_blank" href="tencent://message/?uin=123456789&amp;site=www.jsdaima.com&amp;Menu=yes"><img src="images/qq.png"/></a></li>
+			<li><a target="_blank" href="tencent://message/?uin=123456789&amp;site=www.jsdaima.com&amp;Menu=yes"><img src="images/qq.png"/></a></li>
+			<li class="weixin"><img src="images/qrcode.jpg" width="96" alt="官方微信" /></li>
+		</ul>
+		<div class="keifu_bot"></div>
+	</div>
+
+</div>
+
+
+</body>
+</html>
