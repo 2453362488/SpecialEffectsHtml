@@ -1,0 +1,40 @@
+<!doctype html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+
+    <title>jQuery数据统计动态滚动排名特效插件</title>
+    <meta name="keywords" content="jQuery,数据统计,动态滚动,排名,特效插件" />
+    <meta name="description" content="jQuery数据统计动态滚动排名特效插件下载。js代码(www.jsdaima.com)" />
+    <link rel="stylesheet" href="css/special_bar_chart.css">
+</head>
+
+
+
+<body>
+<div class="box">
+    <div class="tbox" id="tbox">
+    </div>
+</div>
+
+
+<script src="js/jquery.min.js"></script>
+<script type="text/javascript" src="./js/special_bar_chart.js"></script>
+<script>
+
+    var opiton ={
+
+        data:[[100,500],[200,300],[202,404],[350,550],[300,600]],
+
+
+        time:30
+    }
+    $("#tbox").specialBarChart(opiton);
+
+</script>
+</body>
+
+</html>
