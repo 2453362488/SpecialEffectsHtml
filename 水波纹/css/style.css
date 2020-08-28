@@ -1,0 +1,13 @@
+img {
+  display: none;
+}
+
+body {
+  font: 16px/1.4 arial, helvetica, sans-serif;
+  margin: 0 1em;
+  background: #303030;
+}
+
+a {
+  color: #09f;
+}

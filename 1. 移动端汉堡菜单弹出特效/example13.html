@@ -1,0 +1,146 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="_css/Icomoon/style.css" rel="stylesheet" type="text/css" />
+<link href="_css/main.css" rel="stylesheet" type="text/css"/>
+<title>手机顶部导航动画 | jQuery特效|手机微信网站特效| 网页特效库</title>
+<meta name="keywords" content="SVG特效, 手机微信网站特效, css3动画, html5特效, 网页特效" />
+<meta name="description" content="网页特效库-专注于HTML5、CSS3、js、jQuery、手机移动端等网页特效的手机与分享。特效库始终坚持：无会员、无积分、无限制的“三无原则”，所有的资源都免费提供广大童鞋下载学习和使用。" />
+<style>body{font-family: "microsoft yahei";}</style>
+
+<style>
+.mobile-inner-nav{
+	overflow: hidden;
+}
+.mobile-inner-nav a{
+	-webkit-animation-duration: 0.5s;
+	animation-duration: 0.5s;
+	-webkit-animation-fill-mode: both;
+	animation-fill-mode: both;
+	-webkit-animation-name: resize;
+	animation-name: resize;
+}
+
+	
+@-webkit-keyframes resize {
+from, 60%, 75%, 90%, to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+}
+  0% {
+	opacity: 0;
+    -webkit-transform: scale(5,5);
+    transform: scale(5,5);
+}
+  100% {
+	opacity: 1;
+    -webkit-transform: scale(1,1);
+    transform: scale(1,1);
+} 
+}
+
+@keyframes resize {
+from, 60%, 75%, 90%, to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+}
+  0% {
+	opacity: 0;
+    -webkit-transform: scale(5,5);
+    transform: scale(5,5);
+}
+  100% {
+	opacity: 1;
+    -webkit-transform: scale(1,1);
+    transform: scale(1,1);
+}
+}
+
+
+
+</style>
+<script type="text/javascript" src="_scripts/jquery-2.2.0.min.js"></script>
+<script>
+$(window).load(function () {
+
+
+
+$(".mobile-inner-header-icon").click(function(){
+	$(this).toggleClass("mobile-inner-header-icon-click mobile-inner-header-icon-out");
+	$(".mobile-inner-nav").slideToggle(250);
+	
+});
+
+
+
+
+  $(".mobile-inner-nav a").each(function( index ) {
+  	$( this ).css({'animation-delay': (index/10)+'s'});
+  });
+		
+
+
+
+
+});
+</script>
+
+
+</head>
+<body>
+
+
+
+
+
+<div class="wrapper">
+<div class="wrapper-inner">
+
+<div class="wrapper-inner-buttons">
+<a href="index.html">Example 1</a>
+<a href="example2.html">Example 2</a>
+<a href="example3.html">Example 3</a>
+<a href="example4.html">Example 4</a>
+<a href="example5.html">Example 5</a>
+<a href="example6.html">Example 6</a>
+<a href="example7.html">Example 7</a>
+<a href="example8.html">Example 8</a>
+<a href="example9.html">Example 9</a>
+<a href="example10.html">Example 10</a>
+<a href="example11.html">Example 11</a>
+<a href="example12.html">Example 12</a>
+<a href="example13.html">Example 13</a>
+<a href="example14.html">Example 14</a>
+<a href="example15.html">Example 15</a>
+</div>
+
+<div class="mobile">
+<div class="mobile-inner">
+<div class="mobile-inner-header"><div class="mobile-inner-header-icon mobile-inner-header-icon-out"><span></span><span></span></div></div>
+<div class="mobile-inner-nav">
+<a href="#">Home</a>
+<a href="#">Services</a>
+<a href="#">Portfolio</a>
+<a href="#">Blog</a>
+<a href="#">About</a>
+<a href="#">Contact</a>
+
+</div>
+<img src="_assets/photo1.jpg"/>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse elementum felis eget commodo vulputate. Etiam finibus ex sem, sed molestie sapien euismod et. Nunc dolor magna, iaculis ut ipsum a, finibus imperdiet enim. Aliquam eget mi facilisis, dapibus felis sed, efficitur leo. Fusce vestibulum augue a ex feugiat pretium. Morbi eu aliquet mi. Nunc nec mi at quam rhoncus tincidunt eget non lectus.</p> <p> Nullam elementum ornare posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec vel eros nec massa faucibus commodo vel eget dui. Donec tincidunt orci id dui varius, dapibus tristique dolor mollis. Sed non faucibus quam, id ultrices lectus. Nunc lacinia dui sed justo suscipit, nec ornare ligula fermentum. Sed vitae tincidunt enim. Maecenas eget magna ex. In suscipit risus sem.</p>
+</div>
+</div>
+
+
+
+
+</div>
+</div>
+<div style="width: 100%; height: 50px; line-height: 50px; text-align: center;">
+	更多网页特效，请访问<a href="http://www.5iweb.com.cn"><b>网页特效库</b></a>,欢迎加入网页特效库QQ交流群：258242983
+</div>
+</body>
+</html>
+

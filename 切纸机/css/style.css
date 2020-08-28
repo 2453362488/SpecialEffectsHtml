@@ -1,0 +1,314 @@
+@charset "utf-8";
+/*科e互联特效基本框架CSS*/
+body, ul, dl, dd, dt, ol, li, p, h1, h2, h3, h4, h5, h6, textarea, form, select, fieldset, table, td, div, input {margin:0;padding:0;-webkit-text-size-adjust: none}
+h1, h2, h3, h4, h5, h6{font-size:12px;font-weight:normal}
+a {outline-style:none;color:#535353;text-decoration:none}
+a:hover { color: #D40000; text-decoration: none}
+.clear{height:0; overflow:hidden; clear:both}
+.button {display: inline-block;zoom: 1; *display: inline;vertical-align: baseline;margin: 0 2px;outline: none;cursor: pointer;text-align: center;text-decoration: none;font: 14px/100% Arial, Helvetica, sans-serif;padding:0.25em 0.6em 0.3em;text-shadow: 0 1px 1px rgba(0,0,0,.3);-webkit-border-radius: .5em; -moz-border-radius: .5em;border-radius: .5em;-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);-moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.red {color: #faddde;border: solid 1px #980c10;background: #d81b21;background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#A51715));background: -moz-linear-gradient(top,  #ed1c24,  #A51715);filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ed1c24', endColorstr='#aa1317'); font-size:14px!important;}
+.red:hover { background: #b61318; background: -webkit-gradient(linear, left top, left bottom, from(#c9151b), to(#a11115)); background: -moz-linear-gradient(top,  #c9151b,  #a11115); filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#c9151b', endColorstr='#a11115'); color:#fff;}
+.red:active {color: #de898c;background: -webkit-gradient(linear, left top, left bottom, from(#aa1317), to(#ed1c24));background: -moz-linear-gradient(top,  #aa1317,  #ed1c24);filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#aa1317', endColorstr='#ed1c24');}
+.keTitle{ height: 60px; line-height: 60px; font-size: 28px; font-family: '微软雅黑'; color: #FFF; text-align: center; background: url(../images/bodyBg1.gif) repeat-x left bottom; font-weight: normal; position: fixed; width: 100%; left: 0; top: 0; z-index: 999; padding: 0px 0px 8px; opacity:0.8; }
+.keBottom{ color: #FFF; height: 60px; text-align: center; background: url(../images/bodyBg2.gif) repeat-x left top; position: fixed; width: 100%; left: 0; bottom: 0; z-index: 999; font: 18px/60px "微软雅黑"; padding: 3px 0px 5px;opacity:0.8;  }
+.keBottom a,.keBottom a:hover{color:#fff;}
+/*科e互联特效基本框架CSS结束，应用特效时，以上样式可删除*/
+body { background: #333; overflow: hidden; font-family: "微软雅黑"; }
+
+.animate-shredded-paper {
+	-webkit-animation: shredGo 3.5s 1 forwards;
+	animation: shredGo 3.5s 1 forwards;
+}
+
+.animate-content {
+	animation: cover 2.6s 1 forwards 1s;
+	-webkit-animation: cover 2.2s 1 forwards 1s;
+}
+
+.shredded-holder-animate {
+	animation: shredShake 0.12s 26 0.5s;
+	-webkit-animation: shredShake 0.12s 26 0.5s;
+}
+
+.shredded-paper-p-animate {
+	animation: Animation1 3.6s 1 forwards 1s;
+	-webkit-animation: Animation1 3.6s 1 forwards 1s;
+}
+
+.shredded-paper-q-animate {
+	animation: Animation2 3.6s 1 forwards 1s;
+	-webkit-animation: Animation2 3.6s 1 forwards 1s;
+}
+
+.shredded-paper {
+	width: 400px;
+	height: 300px;
+	position: absolute;
+	-webkit-perspective: 1000px;
+	perspective: 1000px;
+	left: 50%;
+	margin-left:-200px;
+	top: 20px;
+	z-index: 5;
+	
+}
+
+.shredded-paper > div[class^='part-'] {
+	height: 100%;
+	width: 100%;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	position: absolute;
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+	z-index: 99;
+	top: 0;
+	
+}
+
+.shredded-paper > .content {
+	background: #fff;
+	height: 100%;
+	overflow: hidden;
+	box-sizing: border-box;
+	width: 100%;
+	-moz-box-sizing: border-box;
+	position: absolute;
+	-webkit-transform: translateZ(180px) scale(0.82);
+	top: 0;
+	z-index: 9999;
+}
+
+.shredded-paper .part-1 { 
+	clip: rect(0,40px,300px,0); 
+	background: #fff;
+	background: -webkit-radial-gradient(32% 97%, 29% 62%, rgba(0,0,0,0.3), rgba(255, 255, 255, 0)) #fff; 
+	background: radial-gradient(circle at 64% 0% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255); 
+}
+.shredded-paper .part-2 { 
+	clip: rect(0,80px,300px,40px); 
+	background: #fff;
+	background: -webkit-radial-gradient(28% 11%, 16% 62%, rgba(0,0,0,0.3), rgba(255,255,255,0)) #fff;
+	background: radial-gradient(circle at 109% 0% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255);
+}
+.shredded-paper .part-3 { 
+	clip: rect(0,120px,300px,80px); 
+	background: #fff;
+	background: -webkit-radial-gradient(12% 88%, 23% 62%, rgba(0,0,0,0.3), rgba(255,255,255,0)) #fff; 
+	background: radial-gradient(circle at 167% 173% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255); 
+}
+.shredded-paper .part-4 { 
+	clip: rect(0,160px,300px,120px); 
+	background: #fff;
+	background: -webkit-radial-gradient(73% 9%, 65% 52%, rgba(0,0,0,0.3), rgba(255, 255, 255, 0)) #fff;
+	background: radial-gradient(circle at 118% -54% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255); 		
+}
+.shredded-paper .part-5 { 
+	clip: rect(0,200px,300px,160px); 
+	background: #fff;
+	background: -webkit-radial-gradient(23% 97%, 29% 62%, rgba(0,0,0,0.3), rgba(255,255,255,0)), -webkit-radial-gradient(72% 20%, 29% 62%, rgba(0,0,0,0.3), rgba(255,255,255,0)) #fff; 
+	background: radial-gradient(circle at 127% 57% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255); 
+}
+.shredded-paper .part-6 { 
+	clip: rect(0,240px,300px,200px); 
+	background: #fff;
+	background: -webkit-radial-gradient(85% 97%, 46% 57%, rgba(0,0,0,0.3), rgba(255, 255, 255, 0)) #FFF; 
+	background: radial-gradient(circle at 116% -103% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255); 
+}
+.shredded-paper .part-7 { 
+	clip: rect(0,280px,300px,240px); 
+	background: #fff;
+	background: -webkit-radial-gradient(85% 24%, 29% 62%, rgba(0,0,0,0.3), rgba(255,255,255,0)) #fff; 
+	background: radial-gradient(circle at 155% 143% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255); 
+}
+.shredded-paper .part-8 { 
+	clip: rect(0,320px,300px,280px); 
+	background: #fff;
+	background: -webkit-radial-gradient(104% 93%, 46% 52%, rgba(0,0,0,0.3), rgba(255, 255, 255, 0)) #FFF; 
+	background: radial-gradient(circle at 241% 154% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255); 
+}
+.shredded-paper .part-9 { 
+	clip: rect(0,360px,300px,320px); 
+	background: #fff;
+	background: -webkit-radial-gradient(39% 18%, 73% 52%, rgba(0,0,0,0.3), rgba(255, 255, 255, 0)) #FFF; 
+	background: radial-gradient(circle at 170% -219% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255); 
+}
+.shredded-paper .part-10 { 
+	clip: rect(0,400px,300px,360px); 
+	background: #fff;
+	background: -webkit-radial-gradient(77% 97%, 29% 62%, rgba(0,0,0,0.3), rgba(255,255,255,0)) #fff;
+	background: radial-gradient(circle at 217% 150% , rgb(134, 134, 134), rgba(255, 255, 255, 0)) repeat scroll 0% 0% rgb(255, 255, 255);
+}
+
+.shredder-holder {
+	position: relative;
+	top: 350px;
+	left: 50%;
+	margin-left:-225px;
+	width: 450px;
+}
+
+.shredder {
+	font-weight: bold;
+	font-size: 1.7em;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+	padding: 33px 0;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	position: absolute;
+	background: #FF0012;
+	width: 100%;
+	border-radius: 2px;
+	height: 100px;
+	box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+	z-index: 9999999;
+	background: rgba(176, 189, 186, 1);
+	text-align: center;
+	color: #FFF;
+}
+
+.shred-me {
+	font-weight: bold;
+	background: #61BAFF;
+	color: #FFF;
+	cursor: pointer;
+	width: 100%;
+	display: inline-block;
+	text-align: center;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	padding: 18px 10px;
+	font-size: 1.5em;
+	position: absolute;
+	top: 236px;
+}
+
+.shred-me:hover {
+	background: rgb(30, 112, 176);
+}
+
+.shred-me:active {
+	box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.alert {
+	padding: 23px 20px 20px 28px;
+	border-radius: 100px;
+	background: #BB4040;
+	color: #FFF;
+	font-size: 2.6em;
+	width: 100px;
+	height: 100px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	margin: 10px auto;
+	z-index: 999;
+	position: relative;
+	top: 52px;
+	z-index: 999;
+	position: relative;
+	top: 52px;
+}
+
+
+@-webkit-keyframes shredGo {
+	10% { top: 20px; }
+	12% { top: 15px; }
+	30% { top: 150px; }
+	32% { top: 145px; }
+	60% { top: 320px; }
+	62% { top: 315px; }
+	68% { top: 380px; }
+	100% { top: 400px; }
+}
+
+@keyframes shredGo {
+	10% { top: 20px; }
+	12% { top: 15px; }
+	30% { top: 150px; }
+	32% { top: 145px; }
+	60% { top: 320px; }
+	62% { top: 315px; }
+	68% { top: 380px; }
+	100% { top: 400px; }
+}
+
+@-webkit-keyframes shredShake {
+	50% { top: 352px; } 
+	100% { top: 348px; }
+}
+
+@keyframes shredShake {
+	50% { top: 352px; } 
+	100% { top: 348px; }
+}
+
+@-webkit-keyframes cover {
+	30% { top: -25px; }
+	80% { height: 20%; }
+	100% { top: 0; height: 0; }
+}
+
+@keyframes cover {
+	30% { top: -25px; }
+	80% { height: 20%; }
+	100% { height: 0; top: -5px; }
+}
+
+@keyframes Animation1 {
+	20% { transform: scaleY(1.1) rotateX(5deg); }
+	50% { transform: scaleY(1.1) rotateX(-5deg); top: 0; }
+	90% { transform: scaleY(1.1) rotateX(10deg); top: 400px; }
+	100% { transform: scaleY(1.1) rotateX(10deg); top: 1200px; }
+}
+
+@-webkit-keyframes Animation1 {
+	20% { -webkit-transform: scaleY(1.1) rotateX(5deg); }
+	50% { -webkit-transform: scaleY(1.1) rotateX(-5deg); top: 0; }
+	90% { -webkit-transform: scaleY(1.1) rotateX(10deg); top: 400px; }
+	100% { -webkit-transform: scaleY(1.1) rotateX(10deg); top: 1200px; }
+}
+
+@keyframes Animation2 {
+	20% { transform: scaleY(1.1) rotateX(-5deg); }
+	50% { transform: scaleY(1.1) rotateX(-5deg); top: 0; }
+	90% { transform: scaleY(1.1) rotateX(-10deg); top: 400px; }
+	100% { transform: scaleY(1.1) rotateX(-10deg); top: 1200px; }
+}
+
+@-webkit-keyframes Animation2 {
+	20% { -webkit-transform: scaleY(1.1) rotateX(-5deg); }
+	50% { -webkit-transform: scaleY(1.1) rotateX(-5deg); top: 0; }
+	90% { -webkit-transform: scaleY(1.1) rotateX(-10deg); top: 400px; }
+	100% { -webkit-transform: scaleY(1.1) rotateX(-10deg); top: 1200px; }
+}
+
+/* ==================== IGNORE */
+
+.go-back a {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	border-radius: 5px;
+	background: rgba(0, 0, 0, 0.3);
+	padding: 10px 20px;
+	color: #FFF;
+	font-size: 1.3em;
+	font-weight: bold;
+	text-decoration: none;
+	padding: 10px;
+}
+
+.go-back a i {
+	font-size: 0.7em;
+	margin: 0 10px 0 0;
+}
+
+.go-back a:hover {
+	background: rgb(30, 112, 176);
+}
+
+.go-back a:active {
+	box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+}

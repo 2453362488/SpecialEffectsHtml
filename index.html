@@ -9,11 +9,9 @@
 <style>
     html,body{
         height: 100%;
-        width: 100%;
     }
     .d1{
         height: 100%;
-        width: 100%;
     }
     .d1_1{
         position:absolute;
@@ -24,7 +22,6 @@
     }
     .d1_2{
         height: 100%;
-        width: 100%;
     }
     iframe{
         height: 100%;
@@ -37,20 +34,46 @@
 </head>
 <body>
 <div class="d1">
-    <div class="d1_1"><h1><a href="javascript:void(0)">首页</a></h1></div>
-    <div class="d1_2">
-        <iframe src="wc/index.html"></iframe>
+    <div class="d1_1" id="d1_1"><h1><a style="color:red;" href="javascript:void(0)" onclick="list()">首页</a></h1></div>
+    <div class="d1_2" id="d1_2">
     </div>
 </div>
 </body>
 <script>
-var srcs = [{"name":"跳一跳","url":"wc/index.html"},
-    {"name":"一笔连成","url":"wcMagicCube/index.html"},
-    {"name":"箭头射击","url":"wc/index.html"},
-    {"name":"飞机大作战","url":"wc/index.html"}];
-var iframetext = '<iframe src="_url"></iframe>';
-for (var i = 0; i < srcs.length; i++){
+    var folder = "texiao/";
+    var srcs = [{"name":"跳一跳","url": folder + "wc/index.html"},
+        {"name":"百叶窗","url": folder + "baiyechuang/index.html"},
+        {"name":"时钟","url": folder + "clock/index.html"},
+        {"name":"动画","url": folder + "donghua/index.html"},
+        {"name":"二维码","url": folder + "erweima/index.html"},
+        {"name":"小游戏","url": folder + "jquerygame/index.html"},
+        {"name":"跳","url": folder + "jump/index.html"},
+        {"name":"幸运抽奖","url": folder + "luckDraw/index.html"},
+        {"name":"幸运抽奖1","url": folder + "luckDraw1/index.html"},
+        {"name":"魔方","url": folder + "mofang/index.html"},
+        {"name":"魔方1","url": folder + "mofang1/index.html"},
+        {"name":"魔方2","url": folder + "mofang2/index.html"},
+        {"name":"全景","url": folder + "panorama/index.html"},
+        {"name":"踢足球","url": folder + "playFootball/index.html"},
+        {"name":"旋涡","url": folder + "xuanwo/index.html"},
+        {"name":"选座","url": folder + "xuanzhuo/index.html"},
+        {"name":"一笔连成","url": folder + "yibiliancheng1/index.html"},
+        {"name":"一笔连画","url": folder + "yibilianhua/index.html"},
+        {"name":"酷跑","url": folder + "coolRun/index.html"}];
+    list();
+    function list(){
+        document.getElementById("d1_1").style.display="none";
+        document.getElementById("d1_2").innerHTML = "";
+        for (var i = 0; i < srcs.length; i++){
+            document.getElementById("d1_2").innerHTML += '<h1><a href="javascript:void(0)" onclick="game(\''+srcs[i].url+'\')">'+srcs[i].name+'</a></h1>';
+            document.getElementById("d1_2").innerHTML +="<hr/>";
+        }
+    }
 
-}
+    function game(url){
+        document.getElementById("d1_1").style.display="";
+        document.getElementById("d1_2").innerHTML = '<iframe src="'+url+'"></iframe>';
+    }
+
 </script>
 </html>
