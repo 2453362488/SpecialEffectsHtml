@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>MMD 模型查看器</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { overflow: hidden; font-family: "Microsoft YaHei", sans-serif; background: #1a1a2e; }
+  #canvas-container { width: 100vw; height: 100vh; }
+
+  /* 拖拽遮罩 */
+  #drop-overlay {
+    position: fixed; inset: 0;
+    background: rgba(30, 60, 120, 0.85);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 100; color: #fff; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  #drop-overlay h1 { font-size: 28px; margin-bottom: 12px; }
+  #drop-overlay p { font-size: 15px; opacity: 0.8; line-height: 1.8; text-align: center; }
+  #drop-overlay .hint { margin-top: 20px; font-size: 13px; opacity: 0.6; }
+
+  /* 控制面板 */
+  #panel {
+    position: fixed; top: 16px; left: 16px;
+    background: rgba(0,0,0,0.65);
+    padding: 12px 16px; border-radius: 8px;
+    color: #fff; z-index: 50;
+    font-size: 13px; line-height: 1.8;
+    min-width: 180px;
+  }
+  #panel h3 { font-size: 14px; margin-bottom: 8px; color: #7ec8ff; }
+  #panel button {
+    display: inline-block; margin: 2px 4px 2px 0;
+    padding: 4px 10px; background: #2d4a7a; color: #fff;
+    border: none; border-radius: 4px; cursor: pointer; font-size: 12px;
+  }
+  #panel button:hover { background: #3d6aaa; }
+  #panel button.active { background: #e94560; }
+  #panel .status { margin-top: 8px; font-size: 11px; opacity: 0.7; }
+
+  /* 加载提示 */
+  #loading {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff; font-size: 18px; z-index: 200;
+    background: rgba(0,0,0,0.8); padding: 20px 40px;
+    border-radius: 8px; display: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+
+<div id="drop-overlay">
+  <h1>MMD 模型查看器</h1>
+  <p style="margin-bottom:20px">请选择模型文件</p>
+  <div style="display:flex;gap:16px;flex-direction:column;align-items:center">
+    <button onclick="document.getElementById('folder-input').click()" style="padding:12px 32px;font-size:16px;background:#e94560;color:#fff;border:none;border-radius:8px;cursor:pointer">选择模型文件夹（带贴图）</button>
+    <button onclick="document.getElementById('pmx-input').click()" style="padding:10px 24px;font-size:14px;background:#2d4a7a;color:#fff;border:none;border-radius:8px;cursor:pointer">选择单个 .pmx 文件（无贴图）</button>
+  </div>
+  <p class="hint">推荐选文件夹：包含 .pmx 和 textures 子目录</p>
+</div>
+
+<input type="file" id="pmx-input" accept=".pmx,.pmd" style="display:none">
+
+<div id="panel" style="display:none">
+  <h3>MMD 查看器</h3>
+  <button id="btn-rotate">自动旋转</button>
+  <button id="btn-wireframe">线框模式</button>
+  <button id="btn-reset">重置视角</button>
+  <button id="btn-load">重新加载</button>
+  <button id="btn-vmd">导入动作</button>
+  <input type="file" id="vmd-input" accept=".vmd" style="display:none">
+  <div class="status" id="status-text">就绪</div>
+  <div class="status" style="margin-top:4px;color:#7ec8ff">WASD/方向键 = 移动 · 鼠标 = 视角</div>
+</div>
+
+<div id="loading">加载模型中...</div>
+
+<input type="file" id="folder-input" webkitdirectory directory style="display:none">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./threejs/build/three.module.js",
+    "three/addons/": "./threejs/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { MMDLoader } from 'three/addons/loaders/MMDLoader.js';
+
+// ============ 全局状态 ============
+let scene, camera, renderer, controls, mmdModel;
+let fileMap = new Map();  // 相对路径 -> File 对象
+let pmxFile = null;
+let useWireframe = false;
+let keys = {};  // 键盘状态
+let mixer = null;
+let currentAction = null;
+let idleAction = null;   // 待机动画
+let walkAction = null;   // 走路动画
+let vmdFile = null;
+
+// ============ 初始化 Three.js ============
+function initThree() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a1a2e);
+  scene.fog = new THREE.Fog(0x1a1a2e, 20, 100);
+
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 12, 35);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 8, 0);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.zoomToCursor = true;  // 鼠标在哪就缩放哪里
+
+  // 灯光
+  const ambient = new THREE.AmbientLight(0xffffff, 1.0);
+  scene.add(ambient);
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 2.0);
+  dirLight.position.set(15, 30, 20);
+  scene.add(dirLight);
+
+  const fillLight = new THREE.DirectionalLight(0x8888ff, 0.8);
+  fillLight.position.set(-15, 10, -10);
+  scene.add(fillLight);
+
+  // 顶部补光
+  const topLight = new THREE.DirectionalLight(0xffffff, 1.0);
+  topLight.position.set(0, 40, 0);
+  scene.add(topLight);
+
+  // 正面补光
+  const frontLight = new THREE.PointLight(0xffffff, 0.8, 100);
+  frontLight.position.set(0, 10, 20);
+  scene.add(frontLight);
+
+  // 地面
+  const gridHelper = new THREE.GridHelper(40, 40, 0x444466, 0x2a2a4a);
+  gridHelper.position.y = 0;
+  scene.add(gridHelper);
+
+  // 窗口自适应
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  animate();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  // 更新动画
+  if (mixer) mixer.update(0.016);
+
+  // 键盘控制移动
+  if (mmdModel) {
+    const speed = 0.3;
+    let moveX = 0, moveZ = 0;
+    if (keys['KeyW'] || keys['ArrowUp']) moveZ -= 1;
+    if (keys['KeyS'] || keys['ArrowDown']) moveZ += 1;
+    if (keys['KeyA'] || keys['ArrowLeft']) moveX -= 1;
+    if (keys['KeyD'] || keys['ArrowRight']) moveX += 1;
+
+    const isMoving = (moveX !== 0 || moveZ !== 0);
+
+    if (isMoving) {
+      // 归一化
+      const len = Math.sqrt(moveX * moveX + moveZ * moveZ);
+      moveX /= len; moveZ /= len;
+
+      // 模型移动
+      mmdModel.position.x += moveX * speed;
+      mmdModel.position.z += moveZ * speed;
+
+      // 面向移动方向
+      const targetRot = Math.atan2(moveX, moveZ);
+      mmdModel.rotation.y = targetRot;
+
+      // 相机跟随模型
+      controls.target.x = mmdModel.position.x;
+      controls.target.z = mmdModel.position.z;
+    }
+  }
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// 键盘监听
+window.addEventListener('keydown', (e) => { keys[e.code] = true; });
+window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+// ============ 文件加载 ============
+async function collectFilesFromDirectory(dirHandle, basePath = '') {
+  for await (const [name, handle] of dirHandle.entries()) {
+    const fullPath = basePath ? `${basePath}/${name}` : name;
+    if (handle.kind === 'directory') {
+      await collectFilesFromDirectory(handle, fullPath);
+    } else {
+      const file = await handle.getFile();
+      fileMap.set(fullPath.toLowerCase(), file);
+      // 也存一下纯文件名方便匹配
+      fileMap.set(name.toLowerCase(), file);
+    }
+  }
+}
+
+async function loadPMXFromFolder(dirHandle) {
+  setLoading(true);
+  fileMap.clear();
+  await collectFilesFromDirectory(dirHandle);
+
+  // 找 .pmx 文件
+  pmxFile = null;
+  for (const [path, file] of fileMap) {
+    if (path.endsWith('.pmx') || path.endsWith('.pmd')) {
+      pmxFile = file;
+      break;
+    }
+  }
+
+  if (!pmxFile) {
+    alert('没找到 .pmx 或 .pmd 文件，请确认文件夹里有模型文件');
+    setLoading(false);
+    return;
+  }
+
+  document.getElementById('status-text').textContent = `加载: ${pmxFile.name}`;
+  await loadModel(pmxFile);
+  setLoading(false);
+}
+
+async function loadModel(file) {
+  // 清除旧模型
+  if (mmdModel) {
+    scene.remove(mmdModel);
+  }
+
+  const manager = new THREE.LoadingManager();
+  const loader = new MMDLoader(manager);
+  const pmxBlobUrl = URL.createObjectURL(file);
+
+  // 拦截器：假路径 model.pmx -> 真实 Blob URL；贴图路径 -> fileMap 里找
+  manager.setURLModifier((url) => {
+    if (typeof url !== 'string') return url;
+    if (url.startsWith('blob:')) return url;
+
+    // PMX 本体
+    if (url.endsWith('model.pmx')) {
+      return pmxBlobUrl;
+    }
+
+    // 贴图：提取文件名从 fileMap 找
+    let fileName = url;
+    // 去掉目录路径
+    const lastSlash = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+    if (lastSlash >= 0) fileName = fileName.substring(lastSlash + 1);
+    // 去掉查询参数
+    const qIdx = fileName.indexOf('?');
+    if (qIdx >= 0) fileName = fileName.substring(0, qIdx);
+    try { fileName = decodeURIComponent(fileName); } catch(e) {}
+    fileName = fileName.toLowerCase();
+
+    if (fileMap.has(fileName)) {
+      return URL.createObjectURL(fileMap.get(fileName));
+    }
+    // 试试完整路径匹配
+    for (const [path, f] of fileMap) {
+      if (path.endsWith(fileName)) {
+        return URL.createObjectURL(f);
+      }
+    }
+    // 找不到贴图：返回 1x1 白色像素，避免加载失败崩溃
+    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+  });
+
+  try {
+    mmdModel = await loader.loadAsync('model.pmx', '');
+    mmdModel.position.y = 0;
+
+    // 遍历所有 mesh 开启阴影
+    mmdModel.traverse((child) => {
+      if (child.isMesh) {
+        // MMD 材质需要双面渲染
+        if (child.material) {
+          child.material.side = THREE.DoubleSide;
+          child.material.needsUpdate = true;
+        }
+      }
+    });
+
+    scene.add(mmdModel);
+    document.getElementById('status-text').textContent = `已加载: ${file.name}`;
+    document.getElementById('panel').style.display = 'block';
+    document.getElementById('drop-overlay').style.display = 'none';
+
+    // 自动调整相机距离
+    frameModel();
+  } catch (e) {
+    console.error('加载失败:', e);
+    document.getElementById('status-text').textContent = '加载失败: ' + e.message;
+    // 在页面上显示错误
+    const errDiv = document.createElement('div');
+    errDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#c0392b;color:#fff;padding:20px 30px;border-radius:8px;z-index:300;max-width:600px;font-size:13px;line-height:1.6;white-space:pre-wrap';
+    errDiv.textContent = '加载失败:\n' + e.message + '\n\n' + (e.stack || '');
+    document.body.appendChild(errDiv);
+  }
+}
+
+function frameModel() {
+  if (!mmdModel) return;
+  const box = new THREE.Box3().setFromObject(mmdModel);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+
+  controls.target.copy(center);
+  camera.position.set(center.x + maxDim * 0.8, center.y + maxDim * 0.3, center.z + maxDim * 1.2);
+  camera.near = maxDim / 100;
+  camera.far = maxDim * 100;
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+
+// ============ UI 事件 ============
+function setLoading(show) {
+  document.getElementById('loading').style.display = show ? 'block' : 'none';
+}
+
+// 拖拽文件夹
+const overlay = document.getElementById('drop-overlay');
+overlay.addEventListener('click', () => {
+  document.getElementById('folder-input').click();
+});
+
+document.getElementById('folder-input').addEventListener('change', async (e) => {
+  const files = e.target.files;
+  if (files.length === 0) return;
+
+  // 用 File 对象重建 fileMap
+  fileMap.clear();
+  let pmx = null;
+  for (const file of files) {
+    const relPath = file.webkitRelativePath || file.name;
+    fileMap.set(relPath.toLowerCase(), file);
+    fileMap.set(file.name.toLowerCase(), file);
+    if (file.name.endsWith('.pmx') || file.name.endsWith('.pmd')) {
+      pmx = file;
+    }
+  }
+
+  if (!pmx) {
+    alert('没找到 .pmx 文件');
+    return;
+  }
+
+  document.getElementById('drop-overlay').style.display = 'none';
+  document.getElementById('panel').style.display = 'block';
+  await loadModel(pmx);
+});
+
+// 单个 PMX 文件选择
+document.getElementById('pmx-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  fileMap.clear();
+  fileMap.set(file.name.toLowerCase(), file);
+  document.getElementById('drop-overlay').style.display = 'none';
+  document.getElementById('panel').style.display = 'block';
+  await loadModel(file);
+});
+
+// 拖拽事件 —— 必须在 dragenter/dragover 都阻止默认行为，否则浏览器会弹"另存为"
+function preventDefaultDrag(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = 'copy';
+  }
+}
+
+document.addEventListener('dragenter', preventDefaultDrag);
+document.addEventListener('dragover', preventDefaultDrag);
+document.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+});
+document.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (!e.dataTransfer) return;
+
+  const items = e.dataTransfer.items;
+  let dirEntry = null;
+
+  // 检查是否拖入了文件夹
+  if (items && items.length > 0) {
+    for (const item of items) {
+      if (item.kind === 'file') {
+        const entry = item.webkitGetAsEntry();
+        if (entry && entry.isDirectory) {
+          dirEntry = entry;
+          break;
+        }
+      }
+    }
+  }
+
+  if (dirEntry) {
+    overlay.style.display = 'none';
+    document.getElementById('panel').style.display = 'block';
+    await loadFromWebkitEntry(dirEntry);
+  } else {
+    // 拖入的是文件（可能是单个 pmx）
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) return;
+
+    fileMap.clear();
+    let pmx = null;
+    for (const file of files) {
+      fileMap.set(file.name.toLowerCase(), file);
+      if (file.name.endsWith('.pmx') || file.name.endsWith('.pmd')) {
+        pmx = file;
+      }
+    }
+    if (pmx) {
+      overlay.style.display = 'none';
+      document.getElementById('panel').style.display = 'block';
+      await loadModel(pmx);
+    } else {
+      alert('请拖入 .pmx 文件或包含 .pmx 的文件夹\n（如果要带贴图，请拖整个文件夹）');
+    }
+  }
+});
+
+// webkit entry 递归读取
+function readEntry(entry, path = '') {
+  return new Promise((resolve) => {
+    if (entry.isFile) {
+      entry.file((file) => {
+        const relPath = path ? `${path}/${file.name}` : file.name;
+        fileMap.set(relPath.toLowerCase(), file);
+        fileMap.set(file.name.toLowerCase(), file);
+        resolve();
+      });
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      const readAll = () => {
+        reader.readEntries(async (entries) => {
+          if (entries.length === 0) {
+            resolve();
+          } else {
+            for (const e of entries) {
+              await readEntry(e, path ? `${path}/${e.name}` : e.name);
+            }
+            readAll();
+          }
+        });
+      };
+      readAll();
+    }
+  });
+}
+
+async function loadFromWebkitEntry(dirEntry) {
+  setLoading(true);
+  fileMap.clear();
+  await readEntry(dirEntry);
+
+  let pmx = null;
+  for (const [path, file] of fileMap) {
+    if (path.endsWith('.pmx') || path.endsWith('.pmd')) {
+      pmx = file;
+      break;
+    }
+  }
+
+  if (!pmx) {
+    alert('没找到 .pmx 文件');
+    setLoading(false);
+    return;
+  }
+
+  await loadModel(pmx);
+  setLoading(false);
+}
+
+// 控制面板按钮
+document.getElementById('btn-rotate').addEventListener('click', function() {
+  controls.autoRotate = !controls.autoRotate;
+  controls.autoRotateSpeed = 2.0;
+  this.classList.toggle('active');
+});
+
+document.getElementById('btn-wireframe').addEventListener('click', function() {
+  useWireframe = !useWireframe;
+  this.classList.toggle('active');
+  if (mmdModel) {
+    mmdModel.traverse((child) => {
+      if (child.isMesh && child.material) {
+        if (Array.isArray(child.material)) {
+          child.material.forEach(m => m.wireframe = useWireframe);
+        } else {
+          child.material.wireframe = useWireframe;
+        }
+      }
+    });
+  }
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  frameModel();
+});
+
+document.getElementById('btn-load').addEventListener('click', () => {
+  document.getElementById('folder-input').click();
+});
+
+// VMD 动作加载
+document.getElementById('btn-vmd').addEventListener('click', () => {
+  if (!mmdModel) { alert('请先加载模型'); return; }
+  document.getElementById('vmd-input').click();
+});
+
+document.getElementById('vmd-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file || !mmdModel) return;
+
+  const manager = new THREE.LoadingManager();
+  const vmdBlobUrl = URL.createObjectURL(file);
+
+  manager.setURLModifier((url) => {
+    if (typeof url !== 'string') return url;
+    if (url.startsWith('blob:')) return url;
+    if (url.endsWith('motion.vmd')) return vmdBlobUrl;
+    return url;
+  });
+
+  try {
+    const loader = new MMDLoader(manager);
+    const clip = await new Promise((resolve, reject) => {
+      loader.loadAnimation('motion.vmd', mmdModel, resolve, undefined, reject);
+    });
+
+    if (!mixer) mixer = new THREE.AnimationMixer(mmdModel);
+    const action = mixer.clipAction(clip);
+    action.play();
+    action.loop = THREE.LoopRepeat;
+
+    document.getElementById('status-text').textContent = `已加载: ${file.name}`;
+  } catch (err) {
+    alert('VMD 加载失败: ' + err.message);
+    console.error(err);
+  }
+});
+
+// 启动
+initThree();
+</script>
+</body>
+</html>
